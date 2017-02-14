@@ -68,63 +68,62 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mContext = MainActivity.this;
 
-        final WToolSDK wToolSDK = new WToolSDK();
-        this.setTitle(this.getTitle() + " - V" + wToolSDK.getVersion());
+        try {
+            final WToolSDK wToolSDK = new WToolSDK();
+            this.setTitle(this.getTitle() + " - V" + wToolSDK.getVersion());
 
-        configUtils = new ConfigUtils(this);
-        wToolSDK.encodeValue("1");
+            configUtils = new ConfigUtils(this);
+            wToolSDK.encodeValue("1");
 
-        TextView textViewPrompt = (TextView) findViewById(R.id.textViewPrompt);
-        textViewPrompt.setClickable(true);
-        textViewPrompt.setMovementMethod(LinkMovementMethod.getInstance());
-        String prompt = "<b>本软件基于<a href=\"http://repo.xposed.info/module/com.easy.wtool\">微控工具xp模块-开发版[微信(wechat)二次开发模块]</a>"
-                +"开发，使用前请确认模块已经安装，模块最低版本：1.0.0.240[1.0.0.129-开发版]</b>";
-        textViewPrompt.setText(Html.fromHtml(prompt));
-        // Example of a call to a native method
-        //TextView tv = (TextView) findViewById(R.id.sample_text);
-        //tv.setText(stringFromJNI());
+            TextView textViewPrompt = (TextView) findViewById(R.id.textViewPrompt);
+            textViewPrompt.setClickable(true);
+            textViewPrompt.setMovementMethod(LinkMovementMethod.getInstance());
+            String prompt = "<b>本软件基于<a href=\"http://repo.xposed.info/module/com.easy.wtool\">微控工具xp模块-开发版[微信(wechat)二次开发模块]</a>"
+                    + "开发，使用前请确认模块已经安装，模块最低版本：1.0.0.240[1.0.0.129-开发版]</b>";
+            textViewPrompt.setText(Html.fromHtml(prompt));
+            // Example of a call to a native method
+            //TextView tv = (TextView) findViewById(R.id.sample_text);
+            //tv.setText(stringFromJNI());
 
-        final Button buttonStartMessage = (Button) findViewById(R.id.buttonStartMessage);
-        //buttonStartMessage.setVisibility(View.INVISIBLE);
-        final EditText editAuthCode = (EditText) findViewById(R.id.editAuthCode);
-        final CheckBox checkBoxFriend =  (CheckBox) findViewById(R.id.checkBoxFriend);
-        final CheckBox checkBoxChatroom =  (CheckBox) findViewById(R.id.checkBoxChatroom);
-        final CheckBox checkBoxAtMe =  (CheckBox) findViewById(R.id.checkBoxAtMe);
+            final Button buttonStartMessage = (Button) findViewById(R.id.buttonStartMessage);
+            //buttonStartMessage.setVisibility(View.INVISIBLE);
+            final EditText editAuthCode = (EditText) findViewById(R.id.editAuthCode);
+            final CheckBox checkBoxFriend = (CheckBox) findViewById(R.id.checkBoxFriend);
+            final CheckBox checkBoxChatroom = (CheckBox) findViewById(R.id.checkBoxChatroom);
+            final CheckBox checkBoxAtMe = (CheckBox) findViewById(R.id.checkBoxAtMe);
 
-        checkBoxAtMe.setText("@我才回复");
-        final TextView editContent = (TextView) findViewById(R.id.editContent);
-        editAuthCode.setText(configUtils.get(ConfigUtils.KEY_AUTHCODE, "0279C8C340306804E57499CD112EB094CB13037A"));
-        if (!editAuthCode.getText().toString().equals("")) {
-            //初始化
-            parseResult(wToolSDK.init(editAuthCode.getText().toString()));
-        }
+            checkBoxAtMe.setText("@我才回复");
+            final TextView editContent = (TextView) findViewById(R.id.editContent);
+            editAuthCode.setText(configUtils.get(ConfigUtils.KEY_AUTHCODE, "0279C8C340306804E57499CD112EB094CB13037A"));
+            if (!editAuthCode.getText().toString().equals("")) {
+                //初始化
+                parseResult(wToolSDK.init(editAuthCode.getText().toString()));
+            }
 
 
-        editContent.setMovementMethod(ScrollingMovementMethod.getInstance());
+            editContent.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-        if(robotIsRunning())
-        {
-            buttonStartMessage.setText("关闭机器人");
-            buttonStartMessage.setTag(1);
-        }
-        else {
-            buttonStartMessage.setTag(0);
-            buttonStartMessage.setText("启动机器人");
-        }
+            if (robotIsRunning()) {
+                buttonStartMessage.setText("关闭机器人");
+                buttonStartMessage.setTag(1);
+            } else {
+                buttonStartMessage.setTag(0);
+                buttonStartMessage.setText("启动机器人");
+            }
 
-        buttonStartMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (buttonStartMessage.getTag().equals(0)) {
-                    Intent i = new Intent(mContext, RobotService.class);
-                    i.putExtra("authCode", editAuthCode.getText().toString());
-                    i.putExtra("firend", checkBoxFriend.isChecked());
-                    i.putExtra("chatroom",checkBoxChatroom.isChecked());
-                    i.putExtra("atme",checkBoxAtMe.isChecked());
-                    startService(i);
-                    //Log.d(LOG_TAG,"result: "+i.getIntExtra("result",0));
-                    buttonStartMessage.setText("关闭机器人");
-                    buttonStartMessage.setTag(1);
+            buttonStartMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (buttonStartMessage.getTag().equals(0)) {
+                        Intent i = new Intent(mContext, RobotService.class);
+                        i.putExtra("authCode", editAuthCode.getText().toString());
+                        i.putExtra("firend", checkBoxFriend.isChecked());
+                        i.putExtra("chatroom", checkBoxChatroom.isChecked());
+                        i.putExtra("atme", checkBoxAtMe.isChecked());
+                        startService(i);
+                        //Log.d(LOG_TAG,"result: "+i.getIntExtra("result",0));
+                        buttonStartMessage.setText("关闭机器人");
+                        buttonStartMessage.setTag(1);
                     /*
                     try {
                         JSONObject jsonObject = new JSONObject();
@@ -148,14 +147,19 @@ public class MainActivity extends AppCompatActivity {
                         Log.e(LOG_TAG, "err", e);
                     }
                     */
-                } else {
-                    //wToolSDK.stopMessageListener();
-                    stopService(new Intent(mContext, RobotService.class));
-                    buttonStartMessage.setTag(0);
-                    buttonStartMessage.setText("启动机器人");
+                    } else {
+                        //wToolSDK.stopMessageListener();
+                        stopService(new Intent(mContext, RobotService.class));
+                        buttonStartMessage.setTag(0);
+                        buttonStartMessage.setText("启动机器人");
+                    }
                 }
-            }
-        });
+            });
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(mContext, "启动软件出错>>"+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
 
